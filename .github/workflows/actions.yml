@@ -33,5 +33,5 @@ jobs:
           poetry show
         
       - name: Run linter
-        run: flakehell lint
+        run: poetry run flakehell lint
 
