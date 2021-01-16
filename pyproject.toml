@@ -1,0 +1,39 @@
+[tool.poetry]
+name = "graduate-work"
+version = "0.1.0"
+description = ""
+authors = ["Nesterenko <nestslock@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+
+[tool.poetry.dev-dependencies]
+flakehell = "^0.9.0"
+wemake-python-styleguide = "^0.14.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+[tool.flakehell]
+format = "grouped"
+show_source = true
+statistics = false
+doctests = true
+enable_extensions = "G"
+
+accept_encodings = "utf-8"
+max_complexity = 6
+max_line_length = 90
+
+ignore = "D100, D104, D401, W504, RST303, RST304, DAR103, DAR203"
+
+[tool.flakehell.plugins]
+"flake8-*" = ["+*"]
+mccabe = ["+*"]
+nitpick = ["+*"]
+"pep8-naming" = ["+*"]
+pycodestyle = ["+*"]
+pyflakes = ["+*"]
+"wemake-python-styleguide" = ["+*"]
