@@ -48,35 +48,33 @@ def get_doctors_and_dataset():
 
 
 def get_users_and_doctors(flash=False):
-    data = pd.read_csv('../private/appointments.csv')
-
-    if os.path.exists('../private/users.json') and not flash:
-        print('load ../private/users.json')
-        with open('../private/users.json', 'r') as fp:
+    if os.path.exists('../private/users_app.json') and not flash:
+        print('load ../private/users_app.json')
+        with open('../private/users_app.json', 'r') as fp:
             return json.load(fp)
 
     print('load ../private/appointments.csv')
+    data = pd.read_csv('../private/appointments.csv')
     users_and_doctors = {}
     progress = progressbar.ProgressBar(max_value=data.shape[0])
     for row in data.iterrows():
-        users_and_doctors.setdefault(int(row[1][0]), []).append(int(row[1][1]))
+        users_and_doctors.setdefault(str(row[1][0]), []).append(int(row[1][1]))
         progress.update(progress.value + 1)
 
-    with open('../private/users.json', 'w') as f:
+    with open('../private/users_app.json', 'w') as f:
         json.dump(users_and_doctors, f)
 
     return users_and_doctors
 
 
 def get_doctor_vectors(flash=False):
-    data = pd.read_csv('../private/dataset.csv')
-
     if os.path.exists('../private/doctors.json') and not flash:
         print('load ../private/doctors.json')
         with open('../private/doctors.json', 'r') as fp:
             return json.load(fp)
 
     print('load ../private/dataset.csv')
+    data = pd.read_csv('../private/dataset.csv')
     doctor_stats = data.iloc[:, [0, 1, 2, 3]]
     matrix = MinMaxScaler().fit_transform(data.iloc[:, 5:])
     doctors = {}
@@ -84,7 +82,7 @@ def get_doctor_vectors(flash=False):
 
     # print(doctor_stats)
     for stat, values in zip(doctor_stats.iterrows(), matrix):
-        doctors[int(stat[1][1])] = values.tolist()
+        doctors[str(stat[1][1])] = values.tolist()
         progress.update(progress.value + 1)
 
     with open('../private/doctors.json', 'w') as f:
@@ -92,12 +90,38 @@ def get_doctor_vectors(flash=False):
 
     return doctors
 
+
+def get_user_vectors(flash=False):
+    if os.path.exists('../private/users.json') and not flash:
+        print('load ../private/users.json')
+        with open('../private/users.json', 'r') as fp:
+            return json.load(fp)
+
+    users_and_doctors = get_users_and_doctors(flash=flash)
+    doctors_vectors = get_doctor_vectors(flash=flash)
+    users_vectors = {}
+    progress = progressbar.ProgressBar(max_value=len(users_and_doctors))
+    for user_id, doctor_ids in users_and_doctors.items():
+        vectors = []
+        for doctor_id in doctor_ids:
+            vectors.append(doctors_vectors[str(doctor_id)])
+        users_vectors[user_id] = np.sum(vectors, axis=0).tolist()
+        progress.update(progress.value + 1)
+
+    with open('../private/users.json', 'w') as f:
+        json.dump(users_vectors, f)
+
+    return users_vectors
+
+
 def main():
     #doctor_stats, matrix = get_doctors_and_dataset()
     users_and_doctors = get_users_and_doctors()
     doctors = get_doctor_vectors()
+    users = get_user_vectors()
 
-    # TODO: сохранить в json вектора предпочтений пользователя
+    # TODO: исправить sql, не все доктора подгружаются
+    # TODO: написать команду, которая из sql сформирует датасеты
     # TODO: провести проверку
 
 if __name__ == '__main__':
