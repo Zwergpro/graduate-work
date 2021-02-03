@@ -47,10 +47,10 @@ def get_doctors_and_dataset():
     return doctor_stats, matrix
 
 
-def get_users_and_doctors():
+def get_users_and_doctors(flash=False):
     data = pd.read_csv('../private/appointments.csv')
 
-    if os.path.exists('../private/users.json'):
+    if os.path.exists('../private/users.json') and not flash:
         print('load ../private/users.json')
         with open('../private/users.json', 'r') as fp:
             return json.load(fp)
@@ -67,12 +67,36 @@ def get_users_and_doctors():
 
     return users_and_doctors
 
-def main():
-    doctor_stats, matrix = get_doctors_and_dataset()
-    users_and_doctors = get_users_and_doctors()
-    print(users_and_doctors)
 
-    # TODO: врачей и их вектора сделать по аналогии с пользователями и сохранить в json
+def get_doctor_vectors(flash=False):
+    data = pd.read_csv('../private/dataset.csv')
+
+    if os.path.exists('../private/doctors.json') and not flash:
+        print('load ../private/doctors.json')
+        with open('../private/doctors.json', 'r') as fp:
+            return json.load(fp)
+
+    print('load ../private/dataset.csv')
+    doctor_stats = data.iloc[:, [0, 1, 2, 3]]
+    matrix = MinMaxScaler().fit_transform(data.iloc[:, 5:])
+    doctors = {}
+    progress = progressbar.ProgressBar(max_value=data.shape[0])
+
+    # print(doctor_stats)
+    for stat, values in zip(doctor_stats.iterrows(), matrix):
+        doctors[int(stat[1][1])] = values.tolist()
+        progress.update(progress.value + 1)
+
+    with open('../private/doctors.json', 'w') as f:
+        json.dump(doctors, f)
+
+    return doctors
+
+def main():
+    #doctor_stats, matrix = get_doctors_and_dataset()
+    users_and_doctors = get_users_and_doctors()
+    doctors = get_doctor_vectors()
+
     # TODO: сохранить в json вектора предпочтений пользователя
     # TODO: провести проверку
 
