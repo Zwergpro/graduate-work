@@ -54,7 +54,7 @@ def get_users_and_doctors(flash=False):
             return json.load(fp)
 
     print('load ../private/appointments.csv')
-    data = pd.read_csv('../private/appointments.csv')
+    data = pd.read_csv('../private/appointments.csv', header=None)
     users_and_doctors = {}
     progress = progressbar.ProgressBar(max_value=data.shape[0])
     for row in data.iterrows():
@@ -73,16 +73,16 @@ def get_doctor_vectors(flash=False):
         with open('../private/doctors.json', 'r') as fp:
             return json.load(fp)
 
-    print('load ../private/dataset.csv')
-    data = pd.read_csv('../private/dataset.csv')
-    doctor_stats = data.iloc[:, [0, 1, 2, 3]]
-    matrix = MinMaxScaler().fit_transform(data.iloc[:, 5:])
+    print('load ../private/doctors.csv')
+    data = pd.read_csv('../private/doctors.csv', header=None)
+    doctor_stats = data.iloc[:, [0, 1, 2]]
+    matrix = MinMaxScaler().fit_transform(data.iloc[:, 4:])
     doctors = {}
     progress = progressbar.ProgressBar(max_value=data.shape[0])
 
     # print(doctor_stats)
     for stat, values in zip(doctor_stats.iterrows(), matrix):
-        doctors[str(stat[1][1])] = values.tolist()
+        doctors[str(stat[1][0])] = values.tolist()
         progress.update(progress.value + 1)
 
     with open('../private/doctors.json', 'w') as f:
@@ -104,7 +104,10 @@ def get_user_vectors(flash=False):
     for user_id, doctor_ids in users_and_doctors.items():
         vectors = []
         for doctor_id in doctor_ids:
-            vectors.append(doctors_vectors[str(doctor_id)])
+            try:
+                vectors.append(doctors_vectors[str(doctor_id)])
+            except KeyError:
+                continue
         users_vectors[user_id] = np.sum(vectors, axis=0).tolist()
         progress.update(progress.value + 1)
 
@@ -116,11 +119,10 @@ def get_user_vectors(flash=False):
 
 def main():
     #doctor_stats, matrix = get_doctors_and_dataset()
-    users_and_doctors = get_users_and_doctors()
-    doctors = get_doctor_vectors()
+    # users_and_doctors = get_users_and_doctors()
+    # doctors = get_doctor_vectors()
     users = get_user_vectors()
 
-    # TODO: исправить sql, не все доктора подгружаются
     # TODO: написать команду, которая из sql сформирует датасеты
     # TODO: провести проверку
 
