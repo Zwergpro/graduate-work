@@ -121,9 +121,8 @@ def main():
     #doctor_stats, matrix = get_doctors_and_dataset()
     # users_and_doctors = get_users_and_doctors()
     # doctors = get_doctor_vectors()
-    users = get_user_vectors()
+    users = get_user_vectors(flash=True)
 
-    # TODO: написать команду, которая из sql сформирует датасеты
     # TODO: провести проверку
 
 if __name__ == '__main__':
