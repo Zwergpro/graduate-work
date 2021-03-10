@@ -11,10 +11,25 @@ pandas = "^1.2.0"
 sklearn = "^0.0"
 progressbar2 = "^3.53.1"
 sshtunnel = "^0.4.0"
+SQLAlchemy = "^1.3.23"
+
 
 [tool.poetry.dev-dependencies]
 flakehell = "^0.9.0"
-wemake-python-styleguide = "^0.14.1"
+pylint = "2.6.0"
+flake8-bandit = "^2.1.2"
+flake8-broken-line = "^0.3.0"
+flake8-bugbear = "^21.3.2"
+flake8-builtins = "^1.5.3"
+flake8-commas = "^2.0.0"
+flake8-comprehensions = "^3.3.1"
+flake8-eradicate = "^1.0.0"
+flake8-import-order = "^0.18.1"
+flake8-print = "^4.0.0"
+flake8-variables-names = "^0.0.4"
+mccabe = "^0.6.1"
+pep8-naming = "^0.11.1"
+pycodestyle = "^2.6.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -23,22 +38,52 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.flakehell]
 format = "grouped"
-show_source = true
 statistics = false
 doctests = true
 enable_extensions = "G"
-
 accept_encodings = "utf-8"
 max_complexity = 6
-max_line_length = 90
-
-ignore = "D100, D104, D401, W504, RST303, RST304, DAR103, DAR203"
+max_line_length = 120
 
 [tool.flakehell.plugins]
-"flake8-*" = ["+*"]
-mccabe = ["+*"]
-nitpick = ["+*"]
-"pep8-naming" = ["+*"]
-pycodestyle = ["+*"]
-pyflakes = ["+*"]
-"wemake-python-styleguide" = ["+*"]
+flake8-bandit = ["+*"]
+flake8-broken-line = ["+*"]  # Found backslash that is used for line breaking
+flake8-bugbear = ["+*"]
+flake8-commas = ["+*"]  # Extension to enforce better comma placement
+flake8-builtins = ["+*"]  # Check for python builtins being used as variables or parameters.
+flake8-comprehensions = ["+*"]  # Plugin that helps you write better list/set/dict comprehensions
+flake8-eradicate = ["+*"]  # Plugin to find commented out (or so called "dead") code.
+flake8-print = ["+*"]  # Check for Print statements in python files
+flake8-variables-names = ["+*"]
+flake8-import-order = [
+    "+*",
+    "-I100",  # Import statements are in the wrong order
+    "-I101",  # Imported names are in the wrong order. Should be
+    "-I201",  # Missing newline between import groups
+    "-I202",  # Additional newline in a group of imports
+]
+mccabe = ["+*"]  # check McCabe complexity
+pep8-naming = ["+*"]  # Check your code against PEP 8 naming conventions
+pycodestyle = [
+    "+*",
+    "-W504",  # line break after binary operator
+]
+pylint = [
+    "+*",
+    "-E1101",  # Instance has no  member (no-member)
+    "-C0411",  # wrong-import-order
+    "-C0116",  # Missing function or method docstring
+    "-C0115",  # Missing class docstring
+    "-C0114",  # Missing module docstring
+    "-W0223",  # abstract-method
+    "-C0301",  # Line too long (pycodestyle check it)
+    "-R0903",  # Too few public methods
+    "-R0201",  # Method could be a function
+    "-W0707",  # Consider explicitly re-raising using the 'from' keyword
+    "-W0613",  # Unused argument
+    "-W0201",  # Attribute defined outside __init__
+    "-C0103",  # Argument name doesn't conform to snake_case naming style
+    "-R0901",  # Too many ancestors
+    "-E0401",  # Unable to import
+    "-E0611",  # No name '' in module
+]

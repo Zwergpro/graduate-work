@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean, SmallInteger, Numeric
+from sqlalchemy import Column, Integer, SmallInteger, Numeric
 
 from src.db.base import BaseModel
 
@@ -64,5 +64,58 @@ class Doctor(BaseModel):
     honor_count = Column(Integer)
     job_count = Column(Integer)
 
+    _fields = (
+        'id',
+        'spec_id',
+        'town_id',
+        'gender',
+        'experience',
+        'science',
+        'category',
+        'position',
+        'rating',
+        'stars',
+        'official_rating',
+        'rates',
+        'drugrates',
+        'answers',
+        'extrainfo',
+        'bio',
+        'hobby',
+        'comments',
+        'appointment_count',
+        'has_owner',
+        'lpu_pro',
+        'min_price',
+        'min_price_go',
+        'min_price_online',
+        'hits',
+        'friendliness',
+        'osmotr',
+        'efficiency',
+        'informativity',
+        'recommend',
+        'spec_in_title',
+        'rate_count',
+        'pos',
+        'net',
+        'neg',
+        'wp_count',
+        'min_price_2',
+        'min_discount',
+        'age_min',
+        'age_max',
+        'avatar',
+        'spec_count',
+        'ed_count',
+        'course_count',
+        'honor_count',
+        'job_count',
+    )
+
     def __repr__(self):
         return f'<Doctor(id={self.id})>'
+
+    def __iter__(self):
+        for item in self._fields:
+            yield getattr(self, item)
