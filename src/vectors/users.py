@@ -6,10 +6,10 @@ import progressbar
 from db.base import Session
 from db.models import Appointment
 from private.settings import PRIVATE_DIR
-from vectors.doctors import DoctorVectors
+from vectors.doctors import DoctorVector
 
 
-class UserVectors:
+class UserVector:
     FILEPATH = PRIVATE_DIR + 'vectors/user_vectors.json'
 
     _vectors = None
@@ -23,7 +23,7 @@ class UserVectors:
             json.dump(self._vectors, f_vectors)
 
     def create(self):
-        doctor_vectors = DoctorVectors()
+        doctor_vectors = DoctorVector()
         doctor_vectors.load()
 
         session = Session()

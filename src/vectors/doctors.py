@@ -9,7 +9,7 @@ from db.models import Doctor
 from private.settings import PRIVATE_DIR
 
 
-class DoctorVectors:
+class DoctorVector:
     FILEPATH = PRIVATE_DIR + 'vectors/doctor_vectors.json'
 
     _vectors = None
@@ -24,8 +24,10 @@ class DoctorVectors:
 
     def create(self):
         session = Session()
-        doctors = session.query(Doctor).order_by(Doctor.id).all()
-        data = pd.DataFrame.from_records(doctors, columns=Doctor._fields)
+        data = pd.DataFrame.from_records(
+            session.query(Doctor).order_by(Doctor.id).all(),
+            columns=Doctor._fields
+        )
 
         doctor_stats = data.iloc[:, [0, 1, 2]]
         matrix = MinMaxScaler().fit_transform(data.iloc[:, 4:])
@@ -33,7 +35,7 @@ class DoctorVectors:
         doctors = {}
         progress = progressbar.ProgressBar(max_value=data.shape[0])
         for stat, values in zip(doctor_stats.iterrows(), matrix):
-            doctors[str(stat[1][0])] = values.tolist()
+            doctors[str(int(stat[1][0]))] = values.tolist()
             progress.update(progress.value + 1)
 
         self._vectors = doctors

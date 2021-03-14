@@ -6,8 +6,8 @@ from src.db.fetcher import DB
 from src.db.models import Appointment, Doctor
 
 
-APPOINTMENTS = PRIVATE_DIR + '/appointments.sql'
-DOCTORS = PRIVATE_DIR + '/doctors.sql'
+APPOINTMENTS = PRIVATE_DIR + '/sql/appointments.sql'
+DOCTORS = PRIVATE_DIR + '/sql/doctors.sql'
 
 
 def fetch_appts(session):
@@ -87,12 +87,18 @@ def fetch_doctors(session):
 
 
 if __name__ == '__main__':
+    print('start fetching')
     session = Session()
+    print('session start')
 
-    session.execute('TRUNCATE appointments;')
+    session.execute('TRUNCATE appointments RESTART IDENTITY;')
+    print('appointments truncated')
     fetch_appts(session)
     session.commit()
+    print('appointments done')
 
-    session.execute('TRUNCATE doctors;')
-    fetch_doctors(session)
-    session.commit()
+    # session.execute('TRUNCATE doctors RESTART IDENTITY;')
+    # print('doctors truncated')
+    # fetch_doctors(session)
+    # session.commit()
+    # print('doctors done')
