@@ -14,6 +14,16 @@ class Appointment(BaseModel):
         return f'<Appt(user={self.user_id}, doctor={self.doctor_id})>'
 
 
+class DoctorSpec(BaseModel):
+    __tablename__ = 'doctor_spec'
+
+    id = Column(Integer, primary_key=True)
+    spec_id = Column(Integer, primary_key=True)
+
+    def __repr__(self):
+        return f'<Doctor_Spec(doctor={self.id}, spec={self.spec_id})>'
+
+
 class Doctor(BaseModel):
     __tablename__ = 'doctors'
 

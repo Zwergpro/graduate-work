@@ -1,13 +1,86 @@
+import json
+import math
+
 from progressbar import progressbar
 
 from private.settings import PRIVATE_DIR
 from src.db.base import Session
 from src.db.fetcher import DB
-from src.db.models import Appointment, Doctor
-
+from src.db.models import Appointment, Doctor, DoctorSpec
 
 APPOINTMENTS = PRIVATE_DIR + '/sql/appointments.sql'
 DOCTORS = PRIVATE_DIR + '/sql/doctors.sql'
+DOCTOR_DF = PRIVATE_DIR + '/sql/df_data.sql'
+DOCTOR_SPEC = PRIVATE_DIR + '/sql/doctor_spec.sql'
+
+DOCTOR_DF_JSON = PRIVATE_DIR + 'vectors/df.json'
+DOCTOR_IDF_JSON = PRIVATE_DIR + 'vectors/idf.json'
+
+
+def fetch_doctor_df():
+    with DB() as cursor:
+        print(f'fetching doctor DF...')
+        with open(DOCTOR_DF, 'r') as f:
+            query = f.read()
+        cursor.execute(query)
+
+        result = cursor.fetchone()
+
+        doctor_df = {
+            'all_count': result[0],
+            'gender': result[1],
+            'experience': result[2],
+            'science': result[3],
+            'category': result[4],
+            'position': result[5],
+            'rating': result[6],
+            'stars': result[7],
+            'official_rating': result[8],
+            'rates': result[9],
+            'drugrates': result[10],
+            'answers': result[11],
+            'extrainfo': result[12],
+            'bio': result[13],
+            'hobby': result[14],
+            'comments': result[15],
+            'appointment_count': result[16],
+            'has_owner': result[17],
+            'lpu_pro': result[18],
+            'min_price': result[19],
+            'min_price_go': result[20],
+            'min_price_online': result[21],
+            'hits': result[22],
+            'friendliness': result[23],
+            'osmotr': result[24],
+            'efficiency': result[25],
+            'informativity': result[26],
+            'recommend': result[27],
+            'spec_in_title': result[28],
+            'rate_count': result[29],
+            'pos': result[30],
+            'net': result[31],
+            'neg': result[32],
+            'wp_count': result[33],
+            'min_price_2': result[34],
+            'min_discount': result[35],
+            'age_min': result[36],
+            'age_max': result[37],
+            'avatar': result[38],
+            'spec_count': result[39],
+            'ed_count': result[40],
+            'course_count': result[41],
+            'honor_count': result[42],
+            'job_count': result[43],
+        }
+
+    # with open(DOCTOR_DF_JSON, 'w') as file:
+    #     json.dump(doctor_df, file)
+
+    all_count = doctor_df.pop('all_count')
+    IDF = list(map(lambda x: math.log10(all_count / x) if x != 0 else 0, result[1:]))
+
+    with open(DOCTOR_IDF_JSON, 'w') as file:
+        json.dump(IDF, file)
 
 
 def fetch_appts(session):
@@ -23,6 +96,22 @@ def fetch_appts(session):
                     user_id=appt[0],
                     doctor_id=appt[1],
                 )
+            )
+
+
+def fetch_doctor_spec(session):
+    with DB() as cursor:
+        print(f'fetching doctor_spec...')
+        with open(DOCTOR_SPEC, 'r') as f:
+            query = f.read()
+        cursor.execute(query)
+
+        for doc_spec in progressbar(cursor.fetchall()):
+            session.add(
+                DoctorSpec(
+                    id=doc_spec[0],
+                    spec_id=doc_spec[1],
+                ),
             )
 
 
@@ -91,11 +180,20 @@ if __name__ == '__main__':
     session = Session()
     print('session start')
 
-    session.execute('TRUNCATE appointments RESTART IDENTITY;')
-    print('appointments truncated')
-    fetch_appts(session)
+    # print('fetch df/idf')
+    # fetch_doctor_df()
+    #
+    # session.execute('TRUNCATE appointments RESTART IDENTITY;')
+    # print('appointments truncated')
+    # fetch_appts(session)
+    # session.commit()
+    # print('appointments done')
+
+    session.execute('TRUNCATE doctor_spec RESTART IDENTITY;')
+    print('doctor_spec truncated')
+    fetch_doctor_spec(session)
     session.commit()
-    print('appointments done')
+    print('doctor_spec done')
 
     # session.execute('TRUNCATE doctors RESTART IDENTITY;')
     # print('doctors truncated')
