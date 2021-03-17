@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, SmallInteger, Numeric
+from sqlalchemy import Column, Integer, SmallInteger, Numeric, DateTime
+from sqlalchemy.ext.declarative import declarative_base
 
-from src.db.base import BaseModel
+BaseModel = declarative_base()
 
 
 class Appointment(BaseModel):
@@ -9,9 +10,24 @@ class Appointment(BaseModel):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     doctor_id = Column(Integer)
+    dt_created = Column(DateTime)
 
     def __repr__(self):
         return f'<Appt(user={self.user_id}, doctor={self.doctor_id})>'
+
+
+class DoctorTown(BaseModel):
+    __tablename__ = 'doctors_towns'
+
+    id = Column(Integer, primary_key=True)
+    doctor_id = Column(Integer)
+    town_id = Column(Integer)
+    spec_id = Column(Integer)
+    wp_spec_id = Column(Integer)
+    rating = Column(Numeric)
+
+    def __repr__(self):
+        return f'<DoctorTown(doctor={self.doctor_id})>'
 
 
 class DoctorSpec(BaseModel):

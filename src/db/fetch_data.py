@@ -95,6 +95,7 @@ def fetch_appts(session):
                 Appointment(
                     user_id=appt[0],
                     doctor_id=appt[1],
+                    dt_created=appt[2],
                 )
             )
 
@@ -176,10 +177,13 @@ def fetch_doctors(session):
 
 
 if __name__ == '__main__':
-    print('start fetching')
-    session = Session()
-    print('session start')
 
+    # TODO: переписать с использованием csv
+    #
+    # print('start fetching')
+    session = Session()
+    # print('session start')
+    #
     # print('fetch df/idf')
     # fetch_doctor_df()
     #
@@ -188,15 +192,46 @@ if __name__ == '__main__':
     # fetch_appts(session)
     # session.commit()
     # print('appointments done')
-
-    session.execute('TRUNCATE doctor_spec RESTART IDENTITY;')
-    print('doctor_spec truncated')
-    fetch_doctor_spec(session)
-    session.commit()
-    print('doctor_spec done')
-
+    #
+    # session.execute('TRUNCATE doctor_spec RESTART IDENTITY;')
+    # print('doctor_spec truncated')
+    # fetch_doctor_spec(session)
+    # session.commit()
+    # print('doctor_spec done')
+    #
     # session.execute('TRUNCATE doctors RESTART IDENTITY;')
     # print('doctors truncated')
     # fetch_doctors(session)
     # session.commit()
     # print('doctors done')
+
+    session.execute('TRUNCATE doctors_towns RESTART IDENTITY;')
+    print('doctors truncated')
+
+    # session.execute("""
+    # copy (
+    #     SELECT DISTINCT
+    #         doctors.id as doctor_id,
+    #         doctors.town_id,
+    #         doctors.spec_id,
+    #         doctor_spec.spec_id as wp_spec_id,
+    #         doctors.rating
+    #     FROM doctors
+    #     JOIN doctor_spec ON doctors.id = doctor_spec.id
+    # ) to '{}sql/doctors_towns.csv' DELIMITER ',' CSV HEADER;
+    # """.format(PRIVATE_DIR))
+    # print('doctors truncated')
+
+    session.execute("""
+    insert into doctors_towns (doctor_id, town_id, spec_id, wp_spec_id, rating)
+    SELECT
+        doctors.id as doctor_id,
+        doctors.town_id,
+        doctors.spec_id,
+        doctor_spec.spec_id as wp_spec_id,
+        doctors.rating
+    FROM doctors
+    JOIN doctor_spec ON doctors.id = doctor_spec.id;
+    """)
+    session.commit()
+    print('doctors done')

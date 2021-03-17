@@ -29,7 +29,7 @@ class UserVector:
         session = Session()
 
         appts = {}
-        for appt in session.query(Appointment).all():
+        for appt in session.query(Appointment.user_id, Appointment.doctor_id).all():
             appts.setdefault(str(appt.user_id), []).append(int(appt.doctor_id))
 
         users_vectors = {}

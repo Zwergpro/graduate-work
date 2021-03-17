@@ -1,5 +1,5 @@
 from src.db.base import engine
-from src.db.models import *
+from src.db.models import BaseModel
 
 
 if __name__ == '__main__':
