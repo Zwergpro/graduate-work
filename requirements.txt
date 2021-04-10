@@ -1,0 +1,96 @@
+annoy==1.17.0
+appnope==0.1.2
+argon2-cffi==20.1.0
+async-generator==1.10
+attrs @ file:///tmp/build/80754af9/attrs_1604765588209/work
+backcall==0.2.0
+bcrypt @ file:///opt/concourse/worker/volumes/live/7540a0c1-471d-4a61-5243-0bfec3601197/volume/bcrypt_1607022666156/work
+bleach==3.3.0
+brotlipy==0.7.0
+catboost==0.25.1
+certifi==2020.12.5
+cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1613413892199/work
+chardet @ file:///Users/runner/miniforge3/conda-bld/chardet_1610093613037/work
+cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography_1616851523607/work
+cycler==0.10.0
+decorator==5.0.5
+defusedxml==0.7.1
+entrypoints==0.3
+graphviz==0.16
+greenlet @ file:///opt/concourse/worker/volumes/live/0770d072-a422-4878-5d79-d3814ee8ae0b/volume/greenlet_1611958360040/work
+idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1593328102638/work
+iniconfig @ file:///home/linux1/recipes/ci/iniconfig_1610983019677/work
+ipykernel==5.5.3
+ipython==7.22.0
+ipython-genutils==0.2.0
+ipywidgets==7.6.3
+jedi==0.18.0
+Jinja2==2.11.3
+joblib==1.0.1
+jsonschema==3.2.0
+jupyter-client==6.1.13
+jupyter-core==4.7.1
+jupyterlab-pygments==0.1.2
+jupyterlab-widgets==1.0.0
+kiwisolver @ file:///opt/concourse/worker/volumes/live/f8867fdb-2fa2-4145-73d9-4d6f6dad5f7c/volume/kiwisolver_1612282424136/work
+lightfm @ file:///Users/runner/miniforge3/conda-bld/lightfm_1612732156981/work
+MarkupSafe==1.1.1
+matplotlib @ file:///opt/concourse/worker/volumes/live/41e8cd50-031f-4dda-5787-dd3c4f4e0f08/volume/matplotlib-suite_1613407855571/work
+mistune==0.8.4
+more-itertools @ file:///tmp/build/80754af9/more-itertools_1613676688952/work
+nbclient==0.5.3
+nbconvert==6.0.7
+nbformat==5.1.3
+nest-asyncio==1.5.1
+notebook==6.3.0
+numpy @ file:///Users/runner/miniforge3/conda-bld/numpy_1616933188420/work
+olefile==0.46
+packaging @ file:///tmp/build/80754af9/packaging_1611952188834/work
+pandas==1.2.3
+pandocfilters==1.4.3
+paramiko @ file:///tmp/build/80754af9/paramiko_1598886428689/work
+parso==0.8.2
+pexpect==4.8.0
+pickleshare==0.7.5
+Pillow @ file:///opt/concourse/worker/volumes/live/36fa9bfe-eb93-4355-7a91-4b76d2c08b7e/volume/pillow_1617386161687/work
+plotly==4.14.3
+pluggy @ file:///opt/concourse/worker/volumes/live/a2630e20-8422-46fc-7347-f73294368851/volume/pluggy_1615976601840/work
+progressbar2==3.37.1
+prometheus-client==0.10.0
+prompt-toolkit==3.0.18
+psycopg2==2.8.6
+ptyprocess==0.7.0
+py @ file:///tmp/build/80754af9/py_1607971587848/work
+pycparser @ file:///home/conda/feedstock_root/build_artifacts/pycparser_1593275161868/work
+Pygments==2.8.1
+PyNaCl @ file:///opt/concourse/worker/volumes/live/84fbe300-25e9-45d9-79c1-dc409645d406/volume/pynacl_1607611470184/work
+pyOpenSSL @ file:///home/conda/feedstock_root/build_artifacts/pyopenssl_1608055815057/work
+pyparsing @ file:///home/linux1/recipes/ci/pyparsing_1610983426697/work
+pyrsistent==0.17.3
+PySocks @ file:///Users/runner/miniforge3/conda-bld/pysocks_1610291470465/work
+pytest==6.2.3
+pytest-runner @ file:///tmp/build/80754af9/pytest-runner_1613936096563/work
+python-dateutil @ file:///home/ktietz/src/ci/python-dateutil_1611928101742/work
+python-utils==2.5.6
+pytz @ file:///tmp/build/80754af9/pytz_1612215392582/work
+pyzmq==22.0.3
+requests @ file:///home/conda/feedstock_root/build_artifacts/requests_1608156231189/work
+retrying==1.3.3
+scikit-learn==0.24.1
+scipy @ file:///Users/runner/miniforge3/conda-bld/scipy_1616878719126/work
+seaborn==0.11.1
+Send2Trash==1.5.0
+six @ file:///home/conda/feedstock_root/build_artifacts/six_1590081179328/work
+sklearn==0.0
+SQLAlchemy @ file:///opt/concourse/worker/volumes/live/29eda907-a227-4e4a-5120-8eff68067a2e/volume/sqlalchemy_1617396615034/work
+sshtunnel @ file:///tmp/build/80754af9/sshtunnel_1610404778147/work
+terminado==0.9.4
+testpath==0.4.4
+threadpoolctl==2.1.0
+toml @ file:///tmp/build/80754af9/toml_1616166611790/work
+tornado @ file:///opt/concourse/worker/volumes/live/2c1a63a2-006b-48ee-56b9-0cfe8b4927f9/volume/tornado_1606942321278/work
+traitlets==5.0.5
+urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1615828766818/work
+wcwidth==0.2.5
+webencodings==0.5.1
+widgetsnbextension==3.5.1

@@ -1,4 +1,5 @@
 import json
+import os
 
 import numpy as np
 import progressbar
@@ -15,6 +16,11 @@ class UserVector:
     _vectors = None
 
     def load(self):
+        if not os.path.exists(self.FILEPATH):
+            self.create()
+            self.save()
+            return
+
         with open(self.FILEPATH, 'r') as f_vectors:
             self._vectors = json.load(f_vectors)
 

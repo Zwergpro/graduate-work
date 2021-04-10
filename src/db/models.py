@@ -10,6 +10,7 @@ class Appointment(BaseModel):
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer)
     doctor_id = Column(Integer)
+    spec_id = Column(Integer)
     dt_created = Column(DateTime)
 
     def __repr__(self):

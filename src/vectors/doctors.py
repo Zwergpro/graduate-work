@@ -1,4 +1,5 @@
 import json
+import os
 
 import pandas as pd
 import progressbar
@@ -15,6 +16,11 @@ class DoctorVector:
     _vectors = None
 
     def load(self):
+        if not os.path.exists(self.FILEPATH):
+            self.create()
+            self.save()
+            return
+
         with open(self.FILEPATH, 'r') as f_vectors:
             self._vectors = json.load(f_vectors)
 
@@ -30,15 +36,18 @@ class DoctorVector:
         )
 
         doctor_stats = data.iloc[:, [0, 1, 2]]
-        matrix = MinMaxScaler().fit_transform(data.iloc[:, 4:])
+        matrix = MinMaxScaler().fit_transform(data.iloc[:, 3:])
 
         doctors = {}
         progress = progressbar.ProgressBar(max_value=data.shape[0])
         for stat, values in zip(doctor_stats.iterrows(), matrix):
             doctors[str(int(stat[1][0]))] = values.tolist()
-            progress.update(progress.value + 1)
+            progress.next()
 
         self._vectors = doctors
 
     def __getitem__(self, item):
         return self._vectors[str(item)]
+
+    def items(self):
+        return self._vectors.items()
