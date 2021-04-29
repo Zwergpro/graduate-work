@@ -8,7 +8,12 @@ def create_app(use_test_config: bool = False):
     app = Flask(__name__)
     _load_config(app, use_test_config)
     models.init_app(app)
-    app.register_blueprint(views.index.bp)
+
+    app.register_blueprint(views.home.bp)
+    app.register_blueprint(views.dataset.bp)
+    app.register_blueprint(views.test.bp)
+    app.register_blueprint(views.train.bp)
+
     return app
 
 
