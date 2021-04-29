@@ -1,6 +1,8 @@
 from flask_migrate import Migrate
 from .base import db
 
+from models import appointment, doctor, doctor_spec, doctor_town, dataset
+
 
 def init_app(app):
     db.init_app(app)
