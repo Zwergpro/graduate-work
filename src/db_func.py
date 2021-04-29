@@ -12,6 +12,7 @@ def get_town_doctor_list(session, town_id: int, spec_id: int) -> List[int]:
         .filter(DoctorTown.town_id == town_id)
         .filter(DoctorTown.wp_spec_id == spec_id)
         .order_by(desc(DoctorTown.rating))
+        .distinct()
     )
 
     return list(doc[0] for doc in doctors.all())
@@ -27,10 +28,20 @@ def get_last_appointment(session, user_id: int) -> Appointment:
     )
 
 
+def get_all_last_appointment(session) -> Appointment:
+    return (
+        session
+        .query(Appointment.user_id, Appointment.id, Appointment.spec_id, Doctor.town_id, Doctor.id)
+        .join(Doctor, Doctor.id == Appointment.doctor_id)
+        .order_by(Appointment.user_id, desc(Appointment.dt_created))
+        .distinct(Appointment.user_id)
+    )
+
+
 def get_all_appointments(session, user_id: int, exclude_doctor_ids: list) -> Iterable[Appointment]:
     return (
         session
-        .query(Appointment)
+        .query(Appointment.doctor_id)
         .filter(Appointment.user_id == user_id)
         .filter(~Appointment.doctor_id.in_(exclude_doctor_ids))
         .order_by(desc(Appointment.dt_created))
@@ -63,10 +74,16 @@ def get_last_doctor(session, user_id: int) -> Tuple[Appointment, Doctor]:
     return last_appt, session.query(Doctor).filter(Doctor.id == last_appt.doctor_id).first()
 
 
-def get_last_doctor_with_all_in_town(session, user_id: int) -> Tuple[Doctor, List[int], List[int]]:
+def get_last_doctor_with_all_in_town(session, user_id: int) -> Tuple[Doctor, List[int]]:
     last_appt, last_doctor = get_last_doctor(session, user_id)
-    town_doctors = list(set(get_town_doctor_list(session, last_doctor.town_id, last_appt.spec_id)))
-    all_appts = list(set(get_all_appointments(session, user_id, [last_doctor.id])))
+    town_doctors = get_town_doctor_list(session, last_doctor.town_id, last_appt.spec_id)
+    return last_doctor, town_doctors
+
+
+def get_last_doctor_with_all_in_town_with_all_appts(session, user_id: int) -> Tuple[Doctor, Iterable[int], Iterable[int]]:
+    last_appt, last_doctor = get_last_doctor(session, user_id)
+    town_doctors = get_town_doctor_list(session, last_doctor.town_id, last_appt.spec_id)
+    all_appts = get_all_appointments(session, user_id, [last_doctor.id])
     return last_doctor, town_doctors, all_appts
 
 
@@ -86,6 +103,15 @@ def get_users(session, appt_count: int = 1) -> List[int]:
         .query(Appointment.user_id)
         .group_by(Appointment.user_id)
         .having(func.count(Appointment.id) >= appt_count)
+        .all()
+    )
+    return [user[0] for user in users]
+
+
+def get_all_users(session) -> List[int]:
+    users = (
+        session
+        .query(Appointment.user_id)
         .all()
     )
     return [user[0] for user in users]

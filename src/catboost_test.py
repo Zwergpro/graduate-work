@@ -1,11 +1,11 @@
 from catboost import CatBoost
 
 from private.settings import PRIVATE_DIR
-from src.test_utils import test_model, get_test_data
+from src.test_utils import test_model, get_biggest_data
 
-MIN_APPTS_MODEL = 10
+MIN_APPTS_MODEL = 3
 LOSS_FUNCTION = 'RMSE'
-MIN_APPTS = 10
+MIN_APPTS = 3
 SORT_LIMIT = 200
 
 
@@ -20,11 +20,13 @@ def sort(data, vectors, model: CatBoost):
 
 
 def main():
-    model_path = f'{PRIVATE_DIR}ranking/model_{LOSS_FUNCTION}_{MIN_APPTS_MODEL}.cbm'
+    # model_path = f'{PRIVATE_DIR}ranking/model_{LOSS_FUNCTION}_{MIN_APPTS_MODEL}.cbm'
+    # model_path = f'{PRIVATE_DIR}ranking/top_one_model_RMSE_7.cbm'
+    model_path = f'{PRIVATE_DIR}ranking/top_one_model_QuerySoftMax_3.cbm'
     model = CatBoost()
     model.load_model(model_path)
 
-    data = get_test_data(min_appt=MIN_APPTS)
+    data = get_biggest_data()
 
     test_model(data, model, sort, max_sort_limit=SORT_LIMIT)
 

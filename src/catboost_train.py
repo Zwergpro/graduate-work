@@ -6,7 +6,7 @@ from catboost import CatBoost, Pool
 from private.settings import PRIVATE_DIR
 from test_utils import get_train_data
 
-MIN_APPTS = 5
+MIN_APPTS = 3
 LOSS_FUNCTION = 'RMSE'
 
 
@@ -55,7 +55,7 @@ def main():
 
         return model
 
-    model = fit_model(LOSS_FUNCTION, {'custom_metric': ['PrecisionAt:top=10', 'RecallAt:top=10', 'MAP:top=10']})
+    model = fit_model(LOSS_FUNCTION, {'custom_metric': ['PrecisionAt:top=5', 'RecallAt:top=5', 'MAP:top=5']})
     model.save_model(model_path)
 
 

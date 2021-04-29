@@ -11,11 +11,13 @@ catboost==0.25.1
 certifi==2020.12.5
 cffi @ file:///Users/runner/miniforge3/conda-bld/cffi_1613413892199/work
 chardet @ file:///Users/runner/miniforge3/conda-bld/chardet_1610093613037/work
+click @ file:///home/linux1/recipes/ci/click_1610990599742/work
 cryptography @ file:///Users/runner/miniforge3/conda-bld/cryptography_1616851523607/work
 cycler==0.10.0
 decorator==5.0.5
 defusedxml==0.7.1
 entrypoints==0.3
+Flask @ file:///home/ktietz/src/ci/flask_1611932660458/work
 graphviz==0.16
 greenlet @ file:///opt/concourse/worker/volumes/live/0770d072-a422-4878-5d79-d3814ee8ae0b/volume/greenlet_1611958360040/work
 idna @ file:///home/conda/feedstock_root/build_artifacts/idna_1593328102638/work
@@ -24,8 +26,9 @@ ipykernel==5.5.3
 ipython==7.22.0
 ipython-genutils==0.2.0
 ipywidgets==7.6.3
+itsdangerous @ file:///home/ktietz/src/ci/itsdangerous_1611932585308/work
 jedi==0.18.0
-Jinja2==2.11.3
+Jinja2 @ file:///tmp/build/80754af9/jinja2_1612213139570/work
 joblib==1.0.1
 jsonschema==3.2.0
 jupyter-client==6.1.13
@@ -34,7 +37,7 @@ jupyterlab-pygments==0.1.2
 jupyterlab-widgets==1.0.0
 kiwisolver @ file:///opt/concourse/worker/volumes/live/f8867fdb-2fa2-4145-73d9-4d6f6dad5f7c/volume/kiwisolver_1612282424136/work
 lightfm @ file:///Users/runner/miniforge3/conda-bld/lightfm_1612732156981/work
-MarkupSafe==1.1.1
+MarkupSafe @ file:///opt/concourse/worker/volumes/live/fac44ebc-60de-4182-7f89-29bb8796c554/volume/markupsafe_1607027351541/work
 matplotlib @ file:///opt/concourse/worker/volumes/live/41e8cd50-031f-4dda-5787-dd3c4f4e0f08/volume/matplotlib-suite_1613407855571/work
 mistune==0.8.4
 more-itertools @ file:///tmp/build/80754af9/more-itertools_1613676688952/work
@@ -93,4 +96,5 @@ traitlets==5.0.5
 urllib3 @ file:///home/conda/feedstock_root/build_artifacts/urllib3_1615828766818/work
 wcwidth==0.2.5
 webencodings==0.5.1
+Werkzeug @ file:///home/ktietz/src/ci/werkzeug_1611932622770/work
 widgetsnbextension==3.5.1
