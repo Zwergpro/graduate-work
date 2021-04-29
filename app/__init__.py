@@ -4,10 +4,11 @@ from flask import Flask
 
 
 def create_app(use_test_config: bool = False):
-    from . import models
+    from . import models, views
     app = Flask(__name__)
     _load_config(app, use_test_config)
     models.init_app(app)
+    app.register_blueprint(views.index.bp)
     return app
 
 
