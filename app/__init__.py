@@ -1,14 +1,13 @@
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 import os
 
-db = SQLAlchemy()
+from flask import Flask
 
 
 def create_app(use_test_config: bool = False):
+    from . import models
     app = Flask(__name__)
     _load_config(app, use_test_config)
-    db.init_app(app)
+    models.init_app(app)
     return app
 
 

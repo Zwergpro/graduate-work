@@ -34,6 +34,7 @@ class Config(object):
 class DevelopmentConfig(Config):
     DEBUG = True
     SECRET_KEY = 'secret_key'
+    SQLALCHEMY_RECORD_QUERIES = True
 
 
 class TestingConfig(Config):
