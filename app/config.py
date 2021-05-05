@@ -27,6 +27,12 @@ class Config(object):
             database=env('DATABASE'),
         )
 
+    with env.prefixed("REDIS_"):
+        REDIS_HOST = env.str('HOST', 'localhost')
+        REDIS_PORT = env.int('PORT', 6379)
+        REDIS_PASSWORD = env.str('PASSWORD', '')
+        REDIS_DB = env.int('DB', 0)
+
 
 class DevelopmentConfig(Config):
     DEBUG = True
