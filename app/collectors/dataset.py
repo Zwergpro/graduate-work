@@ -37,8 +37,8 @@ class DatasetCollector:
         matrix_data.to_csv(self.get_save_path(DOCTORS_CSV), header=False, index=False)
 
         annoy_index = AnnoyIndex(AnnoySettings.ITEMS, AnnoySettings.METRIC)
-        for doc_id, doc_feature in zip(ids, features):
-            annoy_index.add_item(doc_id, doc_feature)
+        for doc_id, doc_feature in zip(ids.values, features.values):
+            annoy_index.add_item(*doc_id, doc_feature)
 
         annoy_index.build(AnnoySettings.TREES, AnnoySettings.JOBS)
         annoy_index.save(self.get_save_path(DOCTORS_ANN))
