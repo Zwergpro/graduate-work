@@ -24,18 +24,16 @@ tmp_type = sa.Enum('start', 'end', 'fail', name='_datasetstatus')
 def upgrade():
     # Create a tempoary "_status" type, convert and drop the "old" type
     tmp_type.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE dataset ALTER COLUMN status TYPE _datasetstatus'
-               ' USING status::text::_datasetstatus')
+    op.execute('ALTER TABLE dataset ALTER COLUMN status TYPE _datasetstatus USING status::text::_datasetstatus')
     old_type.drop(op.get_bind(), checkfirst=False)
     # Create and convert to the "new" status type
     new_type.create(op.get_bind(), checkfirst=False)
-    op.execute('ALTER TABLE dataset ALTER COLUMN status TYPE datasetstatus'
-               ' USING status::text::datasetstatus')
+    op.execute('ALTER TABLE dataset ALTER COLUMN status TYPE datasetstatus USING status::text::datasetstatus')
     tmp_type.drop(op.get_bind(), checkfirst=False)
 
 
 def downgrade():
-    op.execute("UPDATE dataset SET status = 'fail' where status = 'end'")
+    op.execute("UPDATE dataset SET status = 'end' where status = 'fail'")
     # Create a tempoary "_status" type, convert and drop the "new" type
     tmp_type.create(op.get_bind(), checkfirst=False)
     op.execute('ALTER TABLE dataset ALTER COLUMN status TYPE _datasetstatus USING status::text::_datasetstatus')
