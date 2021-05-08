@@ -5,4 +5,9 @@
 {% block content %}
     <h1>Hello from dataset page</h1>
     <h3>All appointments: {{ appt_count }}</h3>
+
+    {% for dataset in datasets %}
+        {{ dataset.name }} -> {{ dataset.path }} <br>
+    {% endfor %}
+
 {% endblock %}
