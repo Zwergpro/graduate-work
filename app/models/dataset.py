@@ -6,6 +6,7 @@ from app.models.base import db
 class DatasetStatus(enum.Enum):
     start = 'start'
     end = 'end'
+    fail = 'fail'
 
 
 class DatasetType(enum.Enum):
