@@ -14,6 +14,7 @@ class Config(object):
     ROOT_PATH = path.dirname(path.dirname(path.dirname(path.abspath(__file__))))
     BASE_DIR = path.dirname(path.dirname(path.abspath(__file__)))
     SECRET_KEY = env('SECRET_KEY')
+    DATASET_DIR = env.str('DATASET_DIR', path.join(path.expanduser('~'), 'datasets'))
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
