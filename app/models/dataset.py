@@ -23,6 +23,7 @@ class Dataset(db.Model):
     dt_start = db.Column(db.DateTime)
     dt_end = db.Column(db.DateTime)
     description = db.Column(db.Text)
+    error = db.Column(db.Text)
     status = db.Column(db.Enum(DatasetStatus))
     type = db.Column(db.Enum(DatasetType))
 
