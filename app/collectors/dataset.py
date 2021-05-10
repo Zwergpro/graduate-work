@@ -1,5 +1,5 @@
 import os
-from typing import Tuple, Iterable, Dict, List
+from typing import Tuple, Dict, List
 
 import pandas as pd
 from annoy import AnnoyIndex
@@ -45,7 +45,7 @@ class DatasetCollector:
 
         self.annoy_index = AnnoyIndex(AnnoySettings.ITEMS, AnnoySettings.METRIC)
         for doc_id, doc_feature in zip(ids.values, features.values):
-            self.annoy_index.add_item(*doc_id, doc_feature)
+            self.annoy_index.add_item(doc_id, doc_feature)
 
         self.annoy_index.build(AnnoySettings.TREES, AnnoySettings.JOBS)
 
@@ -63,25 +63,24 @@ class DatasetCollector:
         """Получает список записей на прием"""
         appts = (
             Appointment.query
-                .options(load_only('id', 'doctor_id', 'spec_id'))
-                .filter(Appointment.user_id == user_id)
-                .order_by(desc(Appointment.dt_created))
-                .distinct()
-                .all()
+            .options(load_only('id', 'doctor_id', 'spec_id'))
+            .filter(Appointment.user_id == user_id)
+            .order_by(desc(Appointment.dt_created))
+            .distinct()
+            .all()
         )
         return [appt for appt in appts]
 
     @staticmethod
-    def get_users(min_appt=1) -> Iterable[int]:
+    def get_users(min_appt=1) -> List[int]:
         """Получает список пользователей, у которых записей на прием не меньше, чем min_appt"""
         users = (
             Appointment.query
-                .with_entities(Appointment.user_id)
-                .query(Appointment.user_id)
-                .group_by(Appointment.user_id)
-                .having(func.count(Appointment.doctor_id) >= min_appt)
+            .with_entities(Appointment.user_id)
+            .group_by(Appointment.user_id)
+            .having(func.count(Appointment.doctor_id) >= min_appt)
         )
-        return (user[0] for user in users.all())
+        return [user[0] for user in users.all()]
 
     @staticmethod
     def get_doctor_towns() -> Dict[int, int]:
@@ -90,18 +89,18 @@ class DatasetCollector:
         return {doctor_id: town_id for doctor_id, town_id in doctors}
 
     @staticmethod
-    def get_town_doctor_list(town_id: int, spec_id: int, exclude: Tuple[int]) -> Iterable[int]:
+    def get_town_doctor_list(town_id: int, spec_id: int, exclude: Tuple[int]) -> List[int]:
         """Получает список врачей в городе по заданной специальности исключая exclude"""
         doctors = (
             DoctorTown.query
-                .with_entities(DoctorTown.doctor_id)
-                .filter(DoctorTown.town_id == town_id)
-                .filter(DoctorTown.wp_spec_id == spec_id)
-                .filter(~DoctorTown.doctor_id.in_(exclude))
-                .order_by(desc(DoctorTown.rating))
-                .distinct()
+            .with_entities(DoctorTown.doctor_id)
+            .filter(DoctorTown.town_id == town_id)
+            .filter(DoctorTown.wp_spec_id == spec_id)
+            .filter(~DoctorTown.doctor_id.in_(exclude))
+            .order_by(desc(DoctorTown.rating))
+            .distinct()
         )
-        return (doc[0] for doc in doctors.all())
+        return [doc[0] for doc in doctors.all()]
 
     def set_appt_dataset(self, to_list, doc_towns, appt) -> None:
         doctors = self.get_town_doctor_list(doc_towns[appt.doctor_id], appt.spec_id, exclude=(appt.doctor_id,))
@@ -122,6 +121,7 @@ class DatasetCollector:
 
         test, train, check = [], [], []
 
+        # TODO: добавить отслеживание прогресса
         for user in all_users:
             last_appt, *old_appts = self.get_appts_by_user(user)
             check.append(last_appt.id)

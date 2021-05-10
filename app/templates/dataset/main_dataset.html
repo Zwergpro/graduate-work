@@ -6,8 +6,20 @@
     <h1>Hello from dataset page</h1>
     <h3>All appointments: {{ appt_count }}</h3>
 
-    {% for dataset in datasets %}
-        {{ dataset.name }} -> {{ dataset.path }} <br>
-    {% endfor %}
+    <div class="">
+        <form action="{{ url_for('dataset.start_dataset_creating') }}" method="post">
+            <button>Create</button>
+        </form>
+    </div>
 
+    <br><br>
+    {% for dataset in datasets %}
+        {{ dataset.name }} -> {{ dataset.status }} <br>
+
+        {% if dataset.status == dataset.status.fail %}
+            <div class="error">
+                {{ dataset.error | safe }}
+            </div>
+        {% endif %}
+    {% endfor %}
 {% endblock %}

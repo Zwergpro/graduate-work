@@ -1,6 +1,7 @@
 import datetime
 import os
 import time
+import traceback
 
 from flask import Blueprint, render_template, current_app, url_for, redirect
 
@@ -41,9 +42,11 @@ def start_dataset_creating():
     try:
         # TODO: добавить параметры датасета
         collector.create_doctor_item_base_matrix()
-        collector.create_datasets_for_catboost()
-    except Exception:
+        collector.create_datasets_for_catboost(min_appts=10)
+    except Exception as e:
+        traceback.print_exc()
         dataset.status = DatasetStatus.fail
+        dataset.error = str(e)
     else:
         dataset.status = DatasetStatus.end
     finally:
