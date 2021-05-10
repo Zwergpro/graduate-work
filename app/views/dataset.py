@@ -3,12 +3,14 @@ import os
 import time
 import traceback
 
-from flask import Blueprint, render_template, current_app, url_for, redirect
+from flask import Blueprint, render_template, current_app, url_for, redirect, abort, jsonify
+from sqlalchemy import desc
 
 from collectors.dataset import DatasetCollector
 from models import db
 from models.appointment import Appointment
 from models.dataset import Dataset, DatasetStatus, DatasetType
+from redis_pool import redis_connection
 
 bp = Blueprint('dataset', __name__, url_prefix='/dataset')
 
@@ -16,8 +18,50 @@ bp = Blueprint('dataset', __name__, url_prefix='/dataset')
 @bp.route('/', methods=('GET',))
 def main():
     appt_count = Appointment.query.count()
-    datasets = Dataset.query.order_by(Dataset.dt_start).all()
-    return render_template('dataset/main_dataset.html', appt_count=appt_count, datasets=datasets)
+    active_dataset = (
+        Dataset.query
+        .filter(Dataset.status == DatasetStatus.start)
+        .order_by(desc(Dataset.dt_start))
+        .first()
+    )
+
+    datasets = Dataset.query.filter(Dataset.id != active_dataset.id).order_by(desc(Dataset.dt_start)).all()
+
+    return render_template(
+        'dataset/main_dataset.html',
+        appt_count=appt_count,
+        datasets=datasets,
+        active_dataset=active_dataset,
+    )
+
+
+@bp.route('/stat/', methods=('GET',))
+def stat():
+    active_dataset = (
+        Dataset.query
+        .filter(Dataset.status == DatasetStatus.start)
+        .order_by(desc(Dataset.dt_start))
+        .first()
+    )
+    r_con = redis_connection()
+
+    if active_dataset is None or not r_con.exists(DatasetCollector.DATASET_R_KEY.format(active_dataset.id)):
+        abort(404)
+
+    all_users = int(r_con.get(DatasetCollector.DATASET_ALL_R_KEY.format(active_dataset.id)))
+    start_time = float(r_con.get(DatasetCollector.DATASET_START_R_KEY.format(active_dataset.id)))
+    already_processed = int(r_con.get(DatasetCollector.DATASET_R_KEY.format(active_dataset.id)))
+
+    return jsonify({
+        'percent': (already_processed / all_users) * 100,
+        'already_processed': already_processed,
+        'all_users': all_users,
+        'time_to_and': str(
+            datetime.timedelta(seconds=int(
+                ((time.time() - start_time) / already_processed) * (all_users - already_processed)),
+            ),
+        ),
+    })
 
 
 @bp.route('/create/', methods=('POST',))
@@ -37,7 +81,7 @@ def start_dataset_creating():
     db.session.add(dataset)
     db.session.commit()
 
-    collector = DatasetCollector(dataset_dir=dataset_dir)
+    collector = DatasetCollector(dataset_model=dataset)
 
     try:
         # TODO: добавить параметры датасета

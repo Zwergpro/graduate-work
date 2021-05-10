@@ -5,7 +5,34 @@
 {% block content %}
     <h1>Hello from dataset page</h1>
     <h3>All appointments: {{ appt_count }}</h3>
+    <br><br>
 
+    {% if active_dataset %}
+        <div class="">
+            {{ active_dataset.name }} -> {{ active_dataset.status }} <br>
+
+            {% if active_dataset.status == active_dataset.status.fail %}
+                <div class="error">
+                    {{ active_dataset.error | safe }}
+                </div>
+            {% else %}
+                <div id="dataset-stat">
+                    Обработано: <span id="already_processed">{{ active_dataset.already_processed }}</span> / <span id="all_users">{{ active_dataset.all_users }}</span>
+                    Осталось: <span id="time_to_and">{{ active_dataset.time_to_and }}</span>
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped progress-bar-animated" id="progressbar" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+{#    {% else%}#}
+{#        <div class="">#}
+{#            <form action="{{ url_for('dataset.start_dataset_creating') }}" method="post">#}
+{#                <button>Create</button>#}
+{#            </form>#}
+{#        </div>#}
+    {% endif %}
+    <br>
     <div class="">
         <form action="{{ url_for('dataset.start_dataset_creating') }}" method="post">
             <button>Create</button>
@@ -23,3 +50,48 @@
         {% endif %}
     {% endfor %}
 {% endblock %}
+
+<script>
+    {% block scripts %}
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        async function updateStat(already_processed, all_users, time_to_and, progressbar) {
+            let stat;
+            try {
+                let response = await fetch('{{ url_for('dataset.stat') }}');
+                stat = await response.json();
+            } catch (err) {
+                return false;
+            }
+
+            already_processed.textContent = stat.already_processed;
+            all_users.textContent = stat.all_users;
+            time_to_and.textContent = stat.time_to_and;
+            progressbar.ariaValueMax = stat.all_users;
+            progressbar.ariaValueNow = stat.already_processed;
+            progressbar.style.width = `${stat.percent}%`;
+
+            return stat.already_processed === stat.all_users;
+        }
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            let already_processed = document.getElementById('already_processed');
+            let all_users = document.getElementById('all_users');
+            let time_to_and = document.getElementById('time_to_and');
+            let progressbar = document.getElementById('progressbar');
+            let result = false
+
+            while (true) {
+                result = await updateStat(already_processed, all_users, time_to_and, progressbar);
+                if (result) {
+                    document.location.reload();
+                    return;
+                }
+                await sleep(2000);
+                console.log('send');
+            }
+        });
+    {% endblock %}
+</script>

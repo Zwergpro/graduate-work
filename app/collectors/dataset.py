@@ -1,4 +1,5 @@
 import os
+import time
 from typing import Tuple, Dict, List
 
 import pandas as pd
@@ -7,9 +8,11 @@ from sklearn.preprocessing import MinMaxScaler
 from sqlalchemy import desc, func
 from sqlalchemy.orm import load_only
 
+from models.dataset import Dataset
 from models.appointment import Appointment
 from models.doctor import Doctor
 from models.doctor_town import DoctorTown
+from redis_pool import redis_connection
 
 
 class AnnoySettings:
@@ -29,8 +32,14 @@ CHECK_DATASET = 'check_dataset.csv'
 class DatasetCollector:
     """Класс для создания тренировочных и проверочных данных"""
 
-    def __init__(self, dataset_dir: str):
-        self.dataset_dir = dataset_dir
+    DATASET_R_KEY_EX = 60 * 60 * 24 * 5
+    DATASET_R_KEY = 'dataset:{}'
+    DATASET_ALL_R_KEY = 'dataset:{}:all'
+    DATASET_START_R_KEY = 'dataset:{}:start'
+
+    def __init__(self, dataset_model: Dataset):
+        self.dataset_model = dataset_model
+        self.dataset_dir = dataset_model.path
         self.annoy_index = None
 
     def create_doctor_item_base_matrix(self, save: bool = True) -> Tuple[pd.DataFrame, AnnoyIndex]:
@@ -121,10 +130,16 @@ class DatasetCollector:
 
         test, train, check = [], [], []
 
-        # TODO: добавить отслеживание прогресса
+        r_con = redis_connection()
+        dataset_r_key = self.DATASET_R_KEY.format(self.dataset_model.id)
+        r_con.set(dataset_r_key, 0, ex=self.DATASET_R_KEY_EX)
+        r_con.set(self.DATASET_ALL_R_KEY.format(self.dataset_model.id), len(all_users), ex=self.DATASET_R_KEY_EX)
+        r_con.set(self.DATASET_START_R_KEY.format(self.dataset_model.id), time.time(), ex=self.DATASET_R_KEY_EX)
+
         for user in all_users:
             last_appt, *old_appts = self.get_appts_by_user(user)
             check.append(last_appt.id)
+            r_con.incr(dataset_r_key)
 
             if not old_appts:
                 continue
