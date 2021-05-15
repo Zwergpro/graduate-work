@@ -1,7 +1,113 @@
 {% extends 'base.html' %}
 
+{% block head %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.2.1/dist/chart.min.js" integrity="sha256-uVEHWRIr846/vAdLJeybWxjPNStREzOlqLMXjW/Saeo=" crossorigin="anonymous"></script>
+{% endblock %}
+
 {% block train_nav_el %}active{% endblock %}
 
 {% block content %}
     <h1>Hello from train page</h1>
+
+    <form action="{{ url_for('train.start_train') }}" method="post">
+        <select class="form-select" aria-label="Default select example" name="dataset">
+            {% for dataset in datasets %}
+                <option value="{{ dataset.id }}">{{ dataset.name }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit" class="btn btn-primary">Тренировать</button>
+    </form>
+
+    <br><br><br>
+    <canvas id="speedChart" width="200" height="100"></canvas>
+
 {% endblock %}
+
+<script>
+{% block scripts %}
+    function getChart() {
+        let speedData = {
+            labels: [],
+            datasets: [
+                {
+                    label: "Test",
+                    data: [],
+                    lineTension: 0,
+                    borderWidth: 2,
+                    radius: 0,
+                    fill: true,
+                    borderColor: 'red'
+                },
+                {
+                    label: "Train",
+                    data: [],
+                    lineTension: 0,
+                    borderWidth: 2,
+                    radius: 0,
+                    fill: true,
+                    borderColor: 'blue'
+                }
+            ]
+        };
+
+        let chartOptions = {
+            legend: {
+                display: true,
+                position: 'top',
+                labels: {
+                    boxWidth: 80,
+                    fontColor: 'black'
+                }
+            },
+        };
+
+        return new Chart(document.getElementById("speedChart"), {
+            type: 'line',
+            data: speedData,
+            options: chartOptions
+        });
+    }
+
+    async function getNextSlice(index) {
+        try {
+            let response = await fetch(`{{ url_for('train.chart') }}?index=${index}`);
+            return await response.json();
+        } catch (err) {
+            return [];
+        }
+    }
+
+    function sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    document.addEventListener("DOMContentLoaded", async function () {
+        let data;
+        let index = 0;
+        let chart = getChart();
+        let tries = 0;
+
+        while (true) {
+            data = await getNextSlice(index);
+            if (data.length === 0) {
+                tries++;
+                if (tries > 4) return;
+                await sleep(3000);
+                continue
+            }
+            tries = 0;
+
+            data.forEach((element) => {
+                chart.data.labels.push(element.iteration);
+                chart.data.datasets[0].data.push(element.learn[0]);
+                chart.data.datasets[1].data.push(element.test[0]);
+                index++;
+            })
+            chart.update();
+            await sleep(2000);
+        }
+
+    });
+{% endblock %}
+</script>

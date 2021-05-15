@@ -25,7 +25,10 @@ def main():
         .first()
     )
 
-    datasets = Dataset.query.filter(Dataset.id != active_dataset.id).order_by(desc(Dataset.dt_start)).all()
+    if active_dataset is not None:
+        datasets = Dataset.query.filter(Dataset.id != active_dataset.id).order_by(desc(Dataset.dt_start)).all()
+    else:
+        datasets = Dataset.query.order_by(desc(Dataset.dt_start)).all()
 
     return render_template(
         'dataset/main_dataset.html',

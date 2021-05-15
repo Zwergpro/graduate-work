@@ -26,7 +26,6 @@ def create_weights(queries):
 
 def get_best_documents(labels, queries):
     query_set = np.unique(queries)
-    num_queries = query_set.shape[0]
     by_query_arg_max = {query: -1 for query in query_set}
 
     for i, query in enumerate(queries):

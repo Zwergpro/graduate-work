@@ -161,3 +161,8 @@ class DatasetCollector:
             check_df.to_csv(self.get_save_path(CHECK_DATASET), header=False, index=False)
 
         return test_df, train_df, check_df
+
+    def load_dataset(self):
+        test_df = pd.read_csv(self.get_save_path(TEST_DATASET), header=None)
+        train_df = pd.read_csv(self.get_save_path(TRAIN_DATASET), header=None)
+        return test_df, train_df
