@@ -19,8 +19,18 @@
         <button type="submit" class="btn btn-primary">Тренировать</button>
     </form>
 
-    <br><br><br>
-    <canvas id="speedChart" width="200" height="100"></canvas>
+    <br><br>
+    {% if active_train %}
+        {{ active_train.name }} -> {{ active_train.status }}
+        {% if active_train.status == active_train.status.train %}
+            <canvas id="speedChart" width="200" height="100"></canvas>
+        {% endif %}
+    {% endif %}
+
+    <br><br>
+    {% for train_model in train_models %}
+        {{ train_model.name }} -> {{ train_model.status }}<br>
+    {% endfor %}
 
 {% endblock %}
 
@@ -71,7 +81,7 @@
 
     async function getNextSlice(index) {
         try {
-            let response = await fetch(`{{ url_for('train.chart') }}?index=${index}`);
+            let response = await fetch(`{{ url_for('train.chart') }}?index=${index}&train_id={{ active_train.id }}`);
             return await response.json();
         } catch (err) {
             return [];
@@ -83,6 +93,8 @@
     }
 
     document.addEventListener("DOMContentLoaded", async function () {
+        if (document.getElementById("speedChart") === null) return;
+
         let data;
         let index = 0;
         let chart = getChart();
