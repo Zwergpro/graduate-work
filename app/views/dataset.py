@@ -18,7 +18,6 @@ bp = Blueprint('dataset', __name__, url_prefix='/dataset')
 
 @bp.route('/', methods=('GET',))
 def main():
-    appt_count = Appointment.query.count()
     active_dataset = (
         Dataset.query
         .filter(Dataset.status == DatasetStatus.start)
@@ -33,7 +32,6 @@ def main():
 
     return render_template(
         'dataset/main_dataset.html',
-        appt_count=appt_count,
         datasets=datasets,
         active_dataset=active_dataset,
     )

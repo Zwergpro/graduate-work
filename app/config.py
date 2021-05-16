@@ -16,6 +16,7 @@ class Config(object):
     SECRET_KEY = env('SECRET_KEY')
     DATASET_DIR = env.str('DATASET_DIR', path.join(path.expanduser('~'), 'datasets'))
     TRAIN_DIR = env.str('TRAIN_DIR', path.join(path.expanduser('~'), 'train'))
+    TEST_DIR = env.str('TEST_DIR', path.join(path.expanduser('~'), 'test'))
 
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 

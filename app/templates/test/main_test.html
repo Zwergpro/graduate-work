@@ -3,5 +3,37 @@
 {% block test_nav_el %}active{% endblock %}
 
 {% block content %}
-    <h1>Hello from test page</h1>
+    <br>
+    <h2>Архив</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Delete</th>
+        </tr>
+        {% for test in tests %}
+            <tr>
+                <td><span  title="{{ test.path }}">{{ test.name }}</span></td>
+                <td>{{ test.dt_start }}</td>
+                <td>{{ test.dt_end }}</td>
+                <td>
+                    {% if test.status == test.status.end %}
+                        <span class="badge bg-success">{{ test.status.name }}</span>
+                    {% elif test.status == test.status.fail %}
+                        <span class="badge bg-danger" title="{{ test.error }}">{{ test.status.name }}</span>
+                    {% else %}
+                        <span class="badge bg-info text-dark">{{ test.status.name }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('test.delete') }}" method="post">
+                        <input type="hidden" name="test_id" value="{{ test.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
