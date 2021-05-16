@@ -13,3 +13,13 @@ h1 {
 .progress {
     max-width: 500px;
 }
+
+
+table {
+  width: 100%;
+}
+
+table th, table td {
+    border-bottom: 1px solid black;
+    padding: 5px 0;
+}

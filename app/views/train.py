@@ -2,11 +2,12 @@ import json
 import os
 import time
 import datetime
+from contextlib import suppress
 
 from models import db
 import numpy as np
 from catboost import CatBoost, Pool
-from flask import Blueprint, render_template, redirect, url_for, request, jsonify, current_app
+from flask import Blueprint, render_template, redirect, url_for, request, jsonify, current_app, abort
 from progressbar import progressbar
 from sqlalchemy import desc
 
@@ -41,10 +42,26 @@ def main():
     )
 
 
+@bp.route('/delete/', methods=('POST',))
+def delete():
+    train_model = Train.query.get_or_404(ident=request.form.get('train_id', default=0))
+    with suppress(FileNotFoundError, PermissionError):
+        os.remove(train_model.path, dir_fd=True)
+
+    local_session = db.session.object_session(train_model)
+    local_session.delete(train_model)
+    local_session.commit()
+    return redirect(url_for('train.main'))
+
+
 @bp.route('/chart/', methods=('GET',))
 def chart():
     index = request.args.get('index', default=0, type=int)
-    train_model = Train.query.filter(Train.id == request.args.get('train_id')).first()
+    train_model = Train.query.get_or_404(ident=request.args.get('train_id', default=0))
+
+    if not os.path.exists(train_model.path):
+        return jsonify([])
+
     with open(f'{train_model.path}/catboost_training.json') as f:
         data = json.load(f)['iterations']
     return jsonify(data[index:])
@@ -52,7 +69,7 @@ def chart():
 
 @bp.route('/start_train/', methods=('POST',))
 def start_train():
-    dataset = Dataset.query.filter(Dataset.id == request.form.get('dataset')).first()
+    dataset = Dataset.query.get_or_404(ident=request.form.get('dataset', default=0))
     collector = DatasetCollector(dataset_model=dataset)
 
     dataset_name = 'train_' + str(time.time()).replace('.', '')

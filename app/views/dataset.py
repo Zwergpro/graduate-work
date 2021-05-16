@@ -3,7 +3,7 @@ import os
 import time
 import traceback
 
-from flask import Blueprint, render_template, current_app, url_for, redirect, abort, jsonify
+from flask import Blueprint, render_template, current_app, url_for, redirect, abort, jsonify, request
 from sqlalchemy import desc
 
 from collectors.dataset import DatasetCollector

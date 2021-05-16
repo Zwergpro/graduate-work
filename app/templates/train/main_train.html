@@ -7,31 +7,102 @@
 {% block train_nav_el %}active{% endblock %}
 
 {% block content %}
-    <h1>Hello from train page</h1>
-
-    <form action="{{ url_for('train.start_train') }}" method="post">
-        <select class="form-select" aria-label="Default select example" name="dataset">
-            {% for dataset in datasets %}
-                <option value="{{ dataset.id }}">{{ dataset.name }}</option>
-            {% endfor %}
-        </select>
-        <br>
-        <button type="submit" class="btn btn-primary">Тренировать</button>
-    </form>
-
     <br><br>
     {% if active_train %}
-        {{ active_train.name }} -> {{ active_train.status }}
-        {% if active_train.status == active_train.status.train %}
-            <canvas id="speedChart" width="200" height="100"></canvas>
-        {% endif %}
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Start</th>
+                <th>End</th>
+                <th>Status</th>
+                <th>Delete</th>
+            </tr>
+            <tr>
+                <td><span  title="{{ active_train.path }}">{{ active_train.name }}</span></td>
+                <td>{{ active_train.dt_start }}</td>
+                <td>{{ active_train.dt_end }}</td>
+                <td>
+                    {% if active_train.status == active_train.status.end %}
+                        <span class="badge bg-success">{{ active_train.status.name }}</span>
+                    {% elif active_train.status == active_train.status.fail %}
+                        <span class="badge bg-danger">{{ active_train.status.name }}</span>
+                    {% elif active_train.status == active_train.status.train %}
+                        <span class="badge bg-primary">{{ active_train.status.name }}</span>
+                    {% else %}
+                        <span class="badge bg-info text-dark">{{ active_train.status.name }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('train.delete') }}" method="post">
+                        <input type="hidden" name="train_id" value="{{ active_train.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        </table>
+        <br>
+        <div style="text-align: center">
+            {% if active_train.status == active_train.status.train %}
+                <h3>Обучение...</h3>
+                <canvas id="speedChart" width="200" height="100"></canvas>
+            {% elif active_train.status in (active_train.status.loading,  active_train.status.prepare) %}
+                <h3>Подготовка данных...</h3>
+                <div class="d-flex justify-content-center">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    {% else %}
+        <form action="{{ url_for('train.start_train') }}" method="post">
+            <select class="form-select" aria-label="Default select example" name="dataset">
+                {% for dataset in datasets %}
+                    <option value="{{ dataset.id }}">{{ dataset.name }}</option>
+                {% endfor %}
+            </select>
+            <br>
+            <button type="submit" class="btn btn-primary">Тренировать</button>
+        </form>
     {% endif %}
 
     <br><br>
-    {% for train_model in train_models %}
-        {{ train_model.name }} -> {{ train_model.status }}<br>
-    {% endfor %}
 
+    <h2>Архив</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Delete</th>
+        </tr>
+        {% for train_model in train_models %}
+            <tr>
+                <td><span  title="{{ train_model.path }}">{{ train_model.name }}</span></td>
+                <td>{{ train_model.dt_start }}</td>
+                <td>{{ train_model.dt_end }}</td>
+                <td>
+                    {% if train_model.status == train_model.status.end %}
+                        <span class="badge bg-success">{{ train_model.status.name }}</span>
+                    {% elif train_model.status == train_model.status.fail %}
+                        <span class="badge bg-danger">{{ train_model.status.name }}</span>
+                    {% elif train_model.status == train_model.status.train %}
+                        <span class="badge bg-primary">{{ train_model.status.name }}</span>
+                    {% else %}
+                        <span class="badge bg-info text-dark">{{ train_model.status.name }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('train.delete') }}" method="post">
+                        <input type="hidden" name="train_id" value="{{ train_model.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br><br>
 {% endblock %}
 
 <script>
