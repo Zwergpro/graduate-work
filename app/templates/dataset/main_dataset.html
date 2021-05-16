@@ -3,10 +3,7 @@
 {% block dataset_nav_el %}active{% endblock %}
 
 {% block content %}
-    <h1>Hello from dataset page</h1>
-    <h3>All appointments: {{ appt_count }}</h3>
-    <br><br>
-
+    <br>
     {% if active_dataset %}
         <div class="">
             {{ active_dataset.name }} -> {{ active_dataset.status }} <br>
@@ -40,15 +37,39 @@
     </div>
 
     <br><br>
-    {% for dataset in datasets %}
-        {{ dataset.name }} -> {{ dataset.status }} <br>
 
-        {% if dataset.status == dataset.status.fail %}
-            <div class="error">
-                {{ dataset.error | safe }}
-            </div>
-        {% endif %}
-    {% endfor %}
+    <h2>Архив</h2>
+    <table>
+        <tr>
+            <th>Name</th>
+            <th>Start</th>
+            <th>End</th>
+            <th>Status</th>
+            <th>Delete</th>
+        </tr>
+        {% for dataset in datasets %}
+            <tr>
+                <td><span  title="{{ dataset.path }}">{{ dataset.name }}</span></td>
+                <td>{{ dataset.dt_start }}</td>
+                <td>{{ dataset.dt_end }}</td>
+                <td>
+                    {% if dataset.status == dataset.status.end %}
+                        <span class="badge bg-success">{{ dataset.status.name }}</span>
+                    {% elif dataset.status == dataset.status.fail %}
+                        <span class="badge bg-danger" title="{{ dataset.error }}">{{ dataset.status.name }}</span>
+                    {% else %}
+                        <span class="badge bg-info text-dark">{{ dataset.status.name }}</span>
+                    {% endif %}
+                </td>
+                <td>
+                    <form action="{{ url_for('dataset.delete') }}" method="post">
+                        <input type="hidden" name="dataset_id" value="{{ dataset.id }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}
 
 <script>

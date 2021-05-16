@@ -2,6 +2,7 @@ import datetime
 import os
 import time
 import traceback
+from contextlib import suppress
 
 from flask import Blueprint, render_template, current_app, url_for, redirect, abort, jsonify, request
 from sqlalchemy import desc
@@ -36,6 +37,18 @@ def main():
         datasets=datasets,
         active_dataset=active_dataset,
     )
+
+
+@bp.route('/delete/', methods=('POST',))
+def delete():
+    train_model = Dataset.query.get_or_404(ident=request.form.get('dataset_id', default=0))
+    with suppress(FileNotFoundError, PermissionError):
+        os.remove(train_model.path, dir_fd=True)
+
+    local_session = db.session.object_session(train_model)
+    local_session.delete(train_model)
+    local_session.commit()
+    return redirect(url_for('dataset.main'))
 
 
 @bp.route('/stat/', methods=('GET',))
