@@ -1,3 +1,4 @@
+import json
 import os
 import time
 from typing import Tuple, Dict, List
@@ -26,7 +27,7 @@ DOCTORS_CSV = 'doctors.csv'
 DOCTORS_ANN = 'doctor_item_base.ann'
 TEST_DATASET = 'test_dataset.csv'
 TRAIN_DATASET = 'train_dataset.csv'
-CHECK_DATASET = 'check_dataset.csv'
+CHECK_DATASET = 'check_dataset.json'
 
 
 class DatasetCollector:
@@ -117,11 +118,21 @@ class DatasetCollector:
             to_list.append([0, appt.id, *self.annoy_index.get_item_vector(doctor)])
         to_list.append([1, appt.id, *self.annoy_index.get_item_vector(appt.doctor_id)])
 
+    def get_check_data(self, doc_towns, last_appt, old_appts) -> dict:
+        """Предагрегирует данные для финального тестирования модели"""
+        doctors = self.get_town_doctor_list(doc_towns[last_appt.doctor_id], last_appt.spec_id, exclude=tuple())[:200]
+
+        return {
+            'selected_doctor': last_appt.doctor_id,
+            'suggested_doctors': doctors,
+            'all_appts': [appt.doctor_id for appt in old_appts],
+        }
+
     def create_datasets_for_catboost(
         self,
         min_appts: int = 1,
         save: bool = True
-    ) -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+    ) -> Tuple[pd.DataFrame, pd.DataFrame, List[dict]]:
         """Создает датасет для тренировки и тестирования"""
         assert self.annoy_index is not None, 'annoy_index does not exist'
 
@@ -138,31 +149,45 @@ class DatasetCollector:
 
         for user in all_users:
             last_appt, *old_appts = self.get_appts_by_user(user)
-            check.append(last_appt.id)
+
+            # последнюю запись на прием оставляем для финального тестирования
+            check.append(self.get_check_data(doc_towns, last_appt, old_appts))
             r_con.incr(dataset_r_key)
 
             if not old_appts:
-                continue
+                continue  # была всего одна запись на прием
 
             test_appt, *train_user_appts = old_appts
-
+            # предпоследнюю запись на прием оставляем для тестирования при обучении
             self.set_appt_dataset(test, doc_towns, test_appt)
 
+            # старые записи на прием оставляем для обучения
             for appt in train_user_appts:
                 self.set_appt_dataset(train, doc_towns, appt)
 
         test_df = pd.DataFrame(test)
         train_df = pd.DataFrame(train)
-        check_df = pd.DataFrame(check)
 
         if save:
             test_df.to_csv(self.get_save_path(TEST_DATASET), header=False, index=False)
             train_df.to_csv(self.get_save_path(TRAIN_DATASET), header=False, index=False)
-            check_df.to_csv(self.get_save_path(CHECK_DATASET), header=False, index=False)
 
-        return test_df, train_df, check_df
+            with open(self.get_save_path(CHECK_DATASET), 'w') as fp:
+                json.dump(check, fp)
+
+        return test_df, train_df, check
 
     def load_dataset(self):
         test_df = pd.read_csv(self.get_save_path(TEST_DATASET), header=None)
         train_df = pd.read_csv(self.get_save_path(TRAIN_DATASET), header=None)
         return test_df, train_df
+
+    def load_check_dataset(self):
+        with open(self.get_save_path(CHECK_DATASET), 'r') as fp:
+            return json.load(fp)
+
+    def load_annoy_index(self):
+        if self.annoy_index is None:
+            self.annoy_index = AnnoyIndex(AnnoySettings.ITEMS, AnnoySettings.METRIC)
+            self.annoy_index.load(self.get_save_path(DOCTORS_ANN))
+        return self.annoy_index

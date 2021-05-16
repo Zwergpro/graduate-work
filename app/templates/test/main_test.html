@@ -4,6 +4,35 @@
 
 {% block content %}
     <br>
+    <div>
+        <form class="row g-2" action="{{ url_for('test.start_test') }}" method="post">
+            <div class="col-md-12">
+                <label class="form-label">Dataset
+                    <select class="form-select" required name="dataset_id">
+                        {% for dataset in datasets %}
+                            <option value="{{ dataset.id }}">{{ dataset.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+
+            <div class="col-md-12">
+                <label class="form-label">Model
+                    <select class="form-select" required name="train_id">
+                        {% for train in trains %}
+                            <option value="{{ train.id }}">{{ train.name }}</option>
+                        {% endfor %}
+                    </select>
+                </label>
+            </div>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Тестировать</button>
+            </div>
+        </form>
+    </div>
+    
+    <br><br>
     <h2>Архив</h2>
     <table>
         <tr>
