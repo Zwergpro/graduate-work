@@ -31,8 +31,56 @@
     {% endif %}
     <br>
     <div class="">
-        <form action="{{ url_for('dataset.start_dataset_creating') }}" method="post">
-            <button type="submit" class="btn btn-primary">Создать</button>
+        <form action="{{ url_for('dataset.start_dataset_creating') }}" method="post" class="row g-3" >
+            <div class="col-4">
+                <label for="inputName" class="form-label">Название</label>
+                <input type="text" class="form-control" id="inputName" placeholder="dataset name">
+            </div>
+
+            <fieldset class="annoy-params row g-3">
+                <legend>Annoy Index</legend>
+                <div class="col-md-3">
+                    <label class="form-label" for="metric-select">Метрика близости</label>
+                    <select class="form-select" id="metric-select">
+                        <option selected value="angular">angular</option>
+                        <option value="euclidean">euclidean</option>
+                        <option value="manhattan">manhattan</option>
+                        <option value="hamming">hamming</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="n-trees-count">Кол-во деревьев</label>
+                    <input type="number" value="10" id="n-trees-count" class="form-control" min="1">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="worker-count">Кол-во воркеров</label>
+                    <input type="number" value="4" id="worker-count" class="form-control" min="1">
+                </div>
+            </fieldset>
+
+            <fieldset class="dataset-params row g-3">
+                <legend>Dataset params</legend>
+                <div class="col-md-3">
+                    <label class="form-label" for="min-appt-count">Минимальное кол-во записей</label>
+                    <input type="number" value="3" id="min-appt-count" class="form-control" min="1">
+                    <div class="col-md-9"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="max-item-count">Максимальное кол-во элементов</label>
+                    <input type="number" value="2000000" id="max-item-count" class="form-control" min="1">
+                    <div class="col-md-9"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="doc-count">Кол-во врачей в группе</label>
+                    <input type="number" value="200" id="doc-count" class="form-control" min="1">
+                    <div class="col-md-9"></div>
+                </div>
+            </fieldset>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Создать</button>
+                <div class="col-md-10"></div>
+            </div>
         </form>
     </div>
 
