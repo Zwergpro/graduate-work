@@ -55,14 +55,70 @@
             {% endif %}
         </div>
     {% else %}
-        <form action="{{ url_for('train.start_train') }}" method="post">
-            <select class="form-select" aria-label="Default select example" name="dataset">
-                {% for dataset in datasets %}
-                    <option value="{{ dataset.id }}">{{ dataset.name }}</option>
-                {% endfor %}
-            </select>
-            <br>
-            <button type="submit" class="btn btn-primary">Тренировать</button>
+        <form action="{{ url_for('train.start_train') }}" method="post" class="row g-3">
+            <div class="col-4">
+                <label for="inputName" class="form-label">Название</label>
+                <input type="text" class="form-control" id="inputName" placeholder="train name">
+            </div>
+
+            <fieldset class="train-params row g-3">
+                <legend>Train params</legend>
+                <div class="col-md-6">
+                    <label class="form-label" for="dataset-select">Dataset</label>
+                    <select class="form-select" id="dataset-select" name="dataset">
+                        {% for dataset in datasets %}
+                            <option value="{{ dataset.id }}">{{ dataset.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="iter-count">Кол-во итераций</label>
+                    <input type="number" value="2000" id="iter-count" class="form-control" min="1">
+                    <div class="col-md-9"></div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label" for="random-seed">Random seed</label>
+                    <input type="number" value="0" id="random-seed" class="form-control">
+                    <div class="col-md-9"></div>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label" for="loss-function">Функция потерь</label>
+                    <select class="form-select" id="loss-function" name="dataset">
+                        <option selected value="QuerySoftMax">QuerySoftMax</option>
+                        <option value="RMSE">RMSE</option>
+                        <option value="QueryRMSE">QueryRMSE</option>
+                        <option value="PairLogit">PairLogit</option>
+                        <option value="PairLogitPairwise">PairLogitPairwise</option>
+                        <option value="YetiRank">YetiRank</option>
+                        <option value="YetiRankPairwise">YetiRankPairwise</option>
+                    </select>
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check">
+                        <label class="form-check-label" for="use_best_model">Использовать лучшую модель</label>
+                        <input type="checkbox" id="use_best_model" class="form-check-input" name="use_best_model">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <label class="form-check-label" for="verbose-param">Подробный отчет</label>
+                        <input type="checkbox" checked id="verbose-param" class="form-check-input" name="verbose-param">
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-check">
+                        <label class="form-check-label" for="plot-param">Рисовать график</label>
+                        <input type="checkbox" checked id="plot-param" class="form-check-input" name="plot-param">
+                    </div>
+                </div>
+
+            </fieldset>
+
+            <div class="col-12">
+                <button type="submit" class="btn btn-primary">Тренировать</button>
+                <div class="col-md-10"></div>
+            </div>
         </form>
     {% endif %}
 
