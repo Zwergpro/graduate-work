@@ -5,25 +5,48 @@
 {% block content %}
     <br>
     <div>
-        <form class="row g-2" action="{{ url_for('test.start_test') }}" method="post">
-            <div class="col-md-12">
-                <label class="form-label">Dataset
-                    <select class="form-select" required name="dataset_id">
+        <form class="row g-3" action="{{ url_for('test.start_test') }}" method="post">
+            <div class="col-4">
+                <label for="inputName" class="form-label">Название</label>
+                <input type="text" class="form-control" id="inputName" placeholder="test name">
+            </div>
+
+            <fieldset class="annoy-params row g-3">
+                <legend>Test params</legend>
+                <div class="col-md-4">
+                    <label class="form-label" for="metric-select">Датасет</label>
+                    <select class="form-select" id="metric-select" name="dataset_id">
                         {% for dataset in datasets %}
                             <option value="{{ dataset.id }}">{{ dataset.name }}</option>
                         {% endfor %}
                     </select>
-                </label>
-            </div>
+                </div>
 
-            <div class="col-md-12">
-                <label class="form-label">Model
-                    <select class="form-select" required name="train_id">
+                <div class="col-md-4">
+                    <label class="form-label" for="metric-select">Модель</label>
+                    <select class="form-select" id="metric-select" name="train_id">
                         {% for train in trains %}
                             <option value="{{ train.id }}">{{ train.name }}</option>
                         {% endfor %}
                     </select>
-                </label>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="doc-count">Кол-во врачей для сортировки</label>
+                    <input type="number" value="200" id="doc-count" class="form-control" min="1">
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label" for="history-k">Коэффициент влияния истории</label>
+                    <input type="number" value="0.6" id="history-k" class="form-control" min="1">
+                </div>
+            </fieldset>
+
+            <div class="col-12">
+                <div class="form-check">
+                    <label class="form-check-label" for="plot-param">Рисовать график</label>
+                    <input type="checkbox" checked id="plot-param" class="form-check-input" name="plot-param">
+                </div>
             </div>
 
             <div class="col-12">
